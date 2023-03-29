@@ -130,7 +130,7 @@ eva.history.fetch <- function(session, request,
 #'
 #' @import httr
 #' @import jsonlite
-#' @import curl
+#' @importFrom curl form_data
 #' @export
 eva.history.push <- function(session, request, data, database="default") {
   c <- NULL
@@ -145,7 +145,7 @@ eva.history.push <- function(session, request, data, database="default") {
                     } else if (typeof(data) == "list") {
                       c <- textConnection("csv", "w")
                       write.csv(data, c, row.names=FALSE)
-                      params$file = curl::form_data(textConnectionValue(c), type="application/csv")
+                      params$file = form_data(textConnectionValue(c), type="application/csv")
                     } else stop("unsupported data kind")
                     if (is.null(session$token)) {
                       eva.authenticate(session)
