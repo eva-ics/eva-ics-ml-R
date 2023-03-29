@@ -31,6 +31,7 @@ eva.get_call_id <- function(session) {
   if (session$call_id > 0xFFFFFFFF) session$call_id <- 1;
   return(session$call_id)
 }
+
 #' Set session credentials for login/password authentication
 #'
 #' @param session
@@ -43,6 +44,7 @@ eva.credentials <- function(session, user, password) {
   session$user <- user;
   session$password <- password;
 }
+
 #' Authenticate the session (usually not called manually)
 #'
 #' @param session
@@ -53,6 +55,7 @@ eva.authenticate <- function(session) {
   r <- eva.call(session, "login", list(u = session$user, p = session$password))
   session$token <- r$token
 }
+
 #' Perform a RPC call on HMI service
 #'
 #' @param session

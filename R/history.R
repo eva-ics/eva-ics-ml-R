@@ -14,6 +14,7 @@ eva.history.request <- function(params_csv=NULL) {
   }
   return(request)
 }
+
 #' Append item OID mapping to a request
 #'
 #' @param request
@@ -32,6 +33,7 @@ eva.history.append_oid <- function(request, oid, status=FALSE, value=FALSE, data
   request$oid_map[oid] <- list(p)
   return(request)
 }
+
 #' Fetch state history data
 #'
 #' @param session
@@ -126,9 +128,9 @@ eva.history.fetch <- function(session, request,
 #' @param data file path or a data frame
 #' @param database database to push data to (default: default)
 #'
-#' @import curl
 #' @import httr
 #' @import jsonlite
+#' @import curl
 #' @export
 eva.history.push <- function(session, request, data, database="default") {
   c <- NULL
