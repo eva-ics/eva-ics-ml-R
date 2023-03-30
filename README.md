@@ -17,5 +17,5 @@ devtools::install_github("eva-ics/eva-ics-ml-R")
 ```shell
 git clone https://github.com/eva-ics/eva-ics-ml-R
 cd eva-ics-ml-R
-echo "install.packages('.', repos=NULL, type='source', dependencies=TRUE)"|R --no-save
+echo "install.packages('.', repos=NULL, type='source', dependencies=TRUE)" | R --no-save
 ```
