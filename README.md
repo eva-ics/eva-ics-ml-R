@@ -6,6 +6,8 @@ R client for EVA ICS Machine Learning Kit
 
 ### With devtools
 
+In R type:
+
 ```R
 install.packages("devtools", dependencies=TRUE)
 library(devtools)
@@ -13,6 +15,8 @@ devtools::install_github("eva-ics/eva-ics-ml-R")
 ```
 
 ### Manual
+
+In the system shell type:
 
 ```shell
 git clone https://github.com/eva-ics/eva-ics-ml-R
