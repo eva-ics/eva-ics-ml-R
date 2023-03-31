@@ -151,7 +151,7 @@ eva.history.push <- function(session, request, data, database="default") {
                       eva.authenticate(session)
                       refreshed <- TRUE
                     } else refreshed <- FALSE
-                    url <- paste(ml_url, "ml/api/push.item.state_history_csv", sep="/")
+                    url <- paste(ml_url, "ml/api/upload.item.state_history", sep="/")
                     repeat {
                       response <- POST(url, body = params, encode = "multipart",
                                        add_headers("x-auth-key" = session$token), timeout(session$timeout))
