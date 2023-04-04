@@ -4,7 +4,7 @@
 #'
 #' @export
 eva.history.request <- function(params_csv=NULL) {
-  request <- list(params = list(fill="1T"), oid_map = list())
+  request <- list(params = list(fill="1T"), oid_map = c())
   if (!is.null(params_csv)) {
     params <- read.csv(params_csv)
     for (i in 1:nrow(params)) {
@@ -27,10 +27,10 @@ eva.history.request <- function(params_csv=NULL) {
 #'
 #' @export
 eva.history.append_oid <- function(request, oid, status=FALSE, value=FALSE, database=NULL, xopts=NULL) {
-  p <- list(status=status, value=value)
+  p <- list(oid=oid, status=status, value=value)
   if (!is.null(database)) p["database"] <- database
   if (!is.null(xopts)) p["xopts"] <- xopts
-  request$oid_map[oid] <- list(p)
+  request$oid_map <- append(request$oid_map, list(p))
   return(request)
 }
 
@@ -64,7 +64,7 @@ eva.history.fetch <- function(session, request,
   if (!is.null(limit)) params$limit <- limit
   if (ml_url == FALSE) {
     # fetch data from HMI
-    params$i <- names(request$oid_map)
+    params$i <- sapply(request$oid_map, function(v) v$oid)
     if (!is.null(xopts)) params$xopts <- xopts
     if (!is.null(database)) params$database <- database
     stat <- eva.call(session, "item.state_history", params)
@@ -72,8 +72,8 @@ eva.history.fetch <- function(session, request,
       data <- tibble(time=stat$t)
       data$time <- as.POSIXct(data$time, origin="1970-01-01", tz=tz)
     } else data <- tibble(time=matrix(NA, ncol=1, nrow=length(stat$t)))
-    for (oid in names(request$oid_map)) {
-      p <- request$oid_map[[oid]]
+    for (p in request$oid_map) {
+      oid <- p$oid
       if (isTRUE(p$status) || identical(p$status,"true") || identical(p$status, 1) || identical(p$status, "1")) {
         col_name <- paste(oid, "status", sep="/")
         data[col_name] <- stat[col_name]
@@ -101,6 +101,16 @@ eva.history.fetch <- function(session, request,
     } else refreshed <- FALSE
     repeat {
       params$oid_map <- request$oid_map
+      if (!is.null(xopts)) {
+        for (i in seq_along(params$oid_map)) {
+          params$oid_map[[i]]$xopts <- xopts
+        }
+      }
+      if (!is.null(database)) {
+        for (i in seq_along(params$oid_map)) {
+          params$oid_map[[i]]$database <- database
+        }
+      }
       response <- POST(url, content_type_json(),
                        body = jsonlite::toJSON(params, auto_unbox=TRUE),
                        stream = TRUE,

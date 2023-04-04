@@ -1,6 +1,6 @@
 Package: evaics
 Title: EVA ICS v4 Client and ML Kit
-Version: 0.0.1
+Version: 0.1.0
 Authors@R: 
     person("Serhij", "Symonenko", , "div@altertech.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
