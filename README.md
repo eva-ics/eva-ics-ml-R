@@ -25,8 +25,7 @@ cd eva-ics-ml-R
 cat << EOF
 install.packages("curl")
 install.packages("httr")
-install.packages("tibble")
-install.packages("readr")
+install.packages("arrow")
 install.packages("jsonlite")
 install.packages('.', repos=NULL, type='source', dependencies=TRUE)
 EOF

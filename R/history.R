@@ -50,8 +50,7 @@ eva.history.append_oid <- function(request, oid, status=FALSE, value=FALSE, data
 #'
 #' @import httr
 #' @import jsonlite
-#' @import tibble
-#' @import readr
+#' @importFrom arrow read_csv_arrow
 #' @export
 eva.history.fetch <- function(session, request,
                               t_start=NULL, t_end=NULL, fill=NULL, limit=NULL, database=NULL, xopts=NULL,
@@ -69,9 +68,9 @@ eva.history.fetch <- function(session, request,
     if (!is.null(database)) params$database <- database
     stat <- eva.call(session, "item.state_history", params)
     if (t_col == "keep") {
-      data <- tibble(time=stat$t)
+      data <- data.frame(time=stat$t)
       data$time <- as.POSIXct(data$time, origin="1970-01-01", tz=tz)
-    } else data <- tibble(time=matrix(NA, ncol=1, nrow=length(stat$t)))
+    } else data <- data.frame(time=matrix(NA, ncol=1, nrow=length(stat$t)))
     for (p in request$oid_map) {
       oid <- p$oid
       if (isTRUE(p$status) || identical(p$status,"true") || identical(p$status, 1) || identical(p$status, "1")) {
@@ -115,6 +114,8 @@ eva.history.fetch <- function(session, request,
                        body = jsonlite::toJSON(params, auto_unbox=TRUE),
                        stream = TRUE,
                        add_headers("x-auth-key" = session$token),
+                       #add_headers("accept" = "application/vnd.apache.arrow.stream"),
+                       add_headers("accept" = "text/csv"),
                        add_headers("accept-encoding" = "gzip"), timeout(session$timeout))
       if (status_code(response) == 403 && endsWith(content(response), "(AUTH)")) {
         if (refreshed) break else {
@@ -124,7 +125,7 @@ eva.history.fetch <- function(session, request,
       } else break
     }
     if (status_code(response) != 200) stop(paste(status_code(response), content(response)))
-    data = read_csv(response$content, show_col_types=FALSE)
+    data = read_csv_arrow(response$content)
     if (t_col == "keep") data$time <- as.POSIXct(data$time, origin="1970-01-01", tz=tz)
     return(data)
   }
@@ -151,11 +152,20 @@ eva.history.push <- function(session, request, data, database="default") {
                     if (isTRUE(ml_url)) ml_url <- session$url
                     params = list(params = jsonlite::toJSON(list(database = database, oid_map = request$oid_map), auto_unbox=TRUE))
                     if (typeof(data) == "character") {
-                      params$file = upload_file(data)
+                      if (endsWith(data, ".csv")) {
+                        type <- "text/csv"
+                      } else if (endsWith(data, ".arrow")) {
+                        type <- "application/vnd.apache.arrow.file"
+                      } else if (endsWith(data, ".arrows")) {
+                        type <- "application/vnd.apache.arrow.stream"
+                      } else {
+                        type <- NULL
+                      }
+                      params$file = upload_file(data, type=type)
                     } else if (typeof(data) == "list") {
                       c <- textConnection("csv", "w")
                       write.csv(data, c, row.names=FALSE)
-                      params$file = form_data(textConnectionValue(c), type="application/csv")
+                      params$file = form_data(textConnectionValue(c), type="text/csv")
                     } else stop("unsupported data kind")
                     if (is.null(session$token)) {
                       eva.authenticate(session)
