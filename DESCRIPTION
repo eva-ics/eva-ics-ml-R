@@ -13,4 +13,4 @@ Imports:
   httr,
   curl,
   jsonlite,
-  arrow
+  readr

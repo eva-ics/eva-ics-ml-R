@@ -50,7 +50,7 @@ eva.history.append_oid <- function(request, oid, status=FALSE, value=FALSE, data
 #'
 #' @import httr
 #' @import jsonlite
-#' @importFrom arrow read_csv_arrow
+#' @importFrom readr read_csv
 #' @export
 eva.history.fetch <- function(session, request,
                               t_start=NULL, t_end=NULL, fill=NULL, limit=NULL, database=NULL, xopts=NULL,
@@ -125,7 +125,7 @@ eva.history.fetch <- function(session, request,
       } else break
     }
     if (status_code(response) != 200) stop(paste(status_code(response), content(response)))
-    data = read_csv_arrow(response$content)
+    data = read_csv(response$content)
     if (t_col == "keep") data$time <- as.POSIXct(data$time, origin="1970-01-01", tz=tz)
     return(data)
   }
