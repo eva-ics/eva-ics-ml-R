@@ -10,7 +10,6 @@ In R type:
 
 ```R
 install.packages("remotes")
-library(remotes)
 remotes::install_github("eva-ics/eva-ics-ml-R")
 ```
 
