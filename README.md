@@ -4,14 +4,14 @@ R client for EVA ICS Machine Learning Kit
 
 ## Installation
 
-### With devtools
+### With remotes/devtools
 
 In R type:
 
 ```R
-install.packages("devtools", dependencies=TRUE)
-library(devtools)
-devtools::install_github("eva-ics/eva-ics-ml-R")
+install.packages("remotes")
+library(remotes)
+remotes::install_github("eva-ics/eva-ics-ml-R")
 ```
 
 ### Manual
