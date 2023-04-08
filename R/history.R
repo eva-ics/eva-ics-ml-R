@@ -125,7 +125,7 @@ eva.history.fetch <- function(session, request,
       } else break
     }
     if (status_code(response) != 200) stop(paste(status_code(response), content(response)))
-    data = read_csv(response$content)
+    data = read_csv(response$content, show_col_types=FALSE)
     if (t_col == "keep") data$time <- as.POSIXct(data$time, origin="1970-01-01", tz=tz)
     return(data)
   }
